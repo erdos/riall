@@ -1,0 +1,28 @@
+name: Test
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install clojure tools
+      uses: DeLaGuardo/setup-clojure@10.3
+      with:
+        cli: latest
+    - name: Cache clojure dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.m2/repository
+          ~/.deps.clj
+        key: cljdeps-${{ hashFiles('deps.edn') }}
+        restore-keys: cljdeps-
+    - name: Install dependencies
+      run: clojure -P
+    - name: Run Clojure Tests
+      run: clojure -M:test
