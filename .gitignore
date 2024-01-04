@@ -1,0 +1,6 @@
+/*.svg
+/*.txt
+.lsp
+.clj-kondo
+.cpcache
+/target

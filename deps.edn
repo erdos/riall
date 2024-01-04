@@ -1,0 +1,9 @@
+{:deps {org.clojure/clojure {:mvn/version "1.11.1"}}
+ :paths ["src"]
+ :aliases
+ {:run {:exec-fn riall.core/-main}
+  :test {:extra-paths ["test"]
+         :extra-deps {lambdaisland/kaocha {:mvn/version "1.87.1366"}}
+         :main-opts ["-m" "kaocha.runner"]}
+  :build {:deps {io.github.clojure/tools.build {:mvn/version "0.9.6"}}
+          :ns-default build}}}

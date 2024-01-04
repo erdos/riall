@@ -1,0 +1,98 @@
+# World Greenhouse Gas Emissions in 2016 (Sector | End Use | Gas)
+# Source: https://www.climatewatchdata.org/key-visualizations?visualization=15
+
+Energy: Transportation [1186] Road
+Energy: Transportation [18] Rail
+Energy: Transportation [29] Pipeline
+Energy: Transportation [185] Air
+Energy: Transportation [170] Ship
+Energy: Transportation [6] Other Transportation
+Energy: Electricity and Heat [6] Road
+Energy: Electricity and Heat [26] Rail
+Energy: Electricity and Heat [2] Pipeline
+Energy: Electricity and Heat [2] Other Transportation
+Energy: Electricity and Heat [705] Residential Buildings
+Energy: Electricity and Heat [488] Commercial Buildings
+Energy: Electricity and Heat [575] Unallocated Fuel Combustion
+Energy: Electricity and Heat [348] Iron & Steel
+Energy: Electricity and Heat [28] Non-ferrous metals
+Energy: Electricity and Heat [24] Machinery
+Energy: Electricity and Heat [50] Food and tobacco
+Energy: Electricity and Heat [27] Paper, pulp and printing
+Energy: Electricity and Heat [175] Chemical and petrochemical
+Energy: Electricity and Heat [499] Other Industry
+Energy: Other Fuel Combustion [206] Unallocated Fuel Combustion
+Energy: Other Fuel Combustion [86] Agriculture & Fishing Energy Use
+Energy: Buildings [382] Residential Buildings
+Energy: Buildings [170] Commercial Buildings
+Energy: Manufacturing and Construction [374] Iron & Steel
+Energy: Manufacturing and Construction [30] Non-ferrous metals
+Energy: Manufacturing and Construction [26] Machinery
+Energy: Manufacturing and Construction [54] Food and tobacco
+Energy: Manufacturing and Construction [29] Paper, pulp and printing
+Energy: Manufacturing and Construction [188] Chemical and petrochemical
+Energy: Manufacturing and Construction [537] Other Industry
+Energy: Electricity and Heat [85] Agriculture & Fishing Energy Use
+Energy: Fugitive Emissions [195] Coal
+Energy: Fugitive Emissions [386] Oil and Natural Gas
+Industrial Processes [297] Cement
+Industrial Processes [7] Non-ferrous metals
+Industrial Processes [220] Chemical and petrochemical
+Industrial Processes [11] Electronics
+Industrial Processes [27] Other Industry
+Agriculture [583] Livestock & Manure
+Agriculture [127] Rice Cultivation
+Agriculture [408] Agriculture Soils
+Agriculture [57] Burning
+Land Use Change and Forestry [216] Forest Land
+Land Use Change and Forestry [135] Cropland
+Land Use Change and Forestry [9] Grassland
+Land Use Change and Forestry [291] Burning
+Waste [187] Landfills
+Waste [6] Other Waste
+Waste [123] Wastewater
+Road [1192] CO2
+Rail [44] CO2
+Pipeline [31] CO2
+Air [185] CO2
+Ship [170] CO2
+Other Transportation [8] CO2
+Residential Buildings [1086] CO2
+Commercial Buildings [658] CO2
+Unallocated Fuel Combustion [613] CO2
+Agriculture & Fishing Energy Use [171] CO2
+Iron & Steel [722] CO2
+Non-ferrous metals [58] CO2
+Machinery [50] CO2
+Food and tobacco [104] CO2
+Paper, pulp and printing [56] CO2
+Chemical and petrochemical [363] CO2
+Other Industry [1036] CO2
+Coal [195] CH4
+Oil and Natural Gas [48] CO2
+Oil and Natural Gas [338] CH4
+Unallocated Fuel Combustion [110] CH4
+Unallocated Fuel Combustion [58] N2O
+Cement [297] CO2
+Non-ferrous metals [7] HFCs, PFCs, SF6, NF3
+Chemical and petrochemical [183] HFCs, PFCs, SF6, NF3
+Chemical and petrochemical [36] N2O
+Electronics [11] HFCs, PFCs, SF6, NF3
+Other Industry [13] N2O
+Other Industry [2] CH4
+Other Industry [12] HFCs, PFCs, SF6, NF3
+Livestock & Manure [555] CH4
+Livestock & Manure [28] N2O
+Rice Cultivation [127] CH4
+Agriculture Soils [408] N2O
+Burning [47] N2O
+Burning [118] CH4
+Forest Land [216] CO2
+Cropland [135] CO2
+Grassland [9] CO2
+Burning [183] CO2
+Landfills [187] CH4
+Other Waste [3] CH4
+Other Waste [2] N2O
+Wastewater [97] CH4
+Wastewater [26] N2O

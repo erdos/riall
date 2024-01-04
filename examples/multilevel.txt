@@ -1,0 +1,63 @@
+# Multi-Level Sankey chart
+#
+# Data source: https://developers.google.com/chart/interactive/docs/gallery/sankey
+
+set canvas.width 480
+set canvas.height 480
+set canvas.margin 20
+
+set edge.opacity 0.66
+set edge.stroke.color aliceblue
+set node.stroke.width 0
+set node.width 5
+
+set canvas.background aliceblue
+
+set edge.background gradient
+
+Brazil [5] Portugal
+Brazil [1] France
+Brazil [1] Spain
+Brazil [1] England
+Canada [1] Portugal
+Canada [5] France
+Canada [1] England
+Mexico [1] Portugal
+Mexico [1] France
+Mexico [5] Spain
+Mexico [1] England
+USA [1] Portugal
+USA [1] France
+USA [1] Spain
+USA [5] England
+Portugal [2] Angola
+Portugal [1] Senegal
+Portugal [1] Morocco
+Portugal [3] South Africa
+France [1] Angola
+France [3] Senegal
+France [3] Mali
+France [3] Morocco
+France [1] South Africa
+Spain [1] Senegal
+Spain [3] Morocco
+Spain [1] South Africa
+England [1] Angola
+England [1] Senegal
+England [2] Morocco
+England [7] South Africa
+South Africa [5] China
+South Africa [1] India
+South Africa [3] Japan
+Angola [5] China
+Angola [1] India
+Angola [3] Japan
+Senegal [5] China
+Senegal [1] India
+Senegal [3] Japan
+Mali [5] China
+Mali [1] India
+Mali [3] Japan
+Morocco [5] China
+Morocco [1] India
+Morocco [3] Japan

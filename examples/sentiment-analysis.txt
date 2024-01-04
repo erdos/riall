@@ -1,0 +1,19 @@
+
+Services [57] Positive
+Services [206] Negative
+
+Positive [12] Take time
+Positive [35] Quality
+
+Negative [42] Disorganized
+Negative [23] Disappointed
+Negative [36] Wasteful
+Negative [5] Quality
+Negative [22] Take time
+
+set edge.background source
+set edge.opacity 0.7
+
+set node.stroke.width 0
+set node.shape.rx 2
+set node.shape.ry 12
