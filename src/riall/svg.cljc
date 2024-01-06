@@ -96,8 +96,8 @@
         [x1 y1] (projecting cfg [x1 y1])
         [x2 y2] (projecting cfg [x2 y2])
 
-        x1 (+ x1 (/ src-width 2))
-        x2 (- x2 (/ dst-width 2))
+        x1 (+ x1 (max 0 (- (/ src-width 2) (get-node-config source :shape :rx))))
+        x2 (- x2 (max 0 (- (/ dst-width 2) (get-node-config target :shape :rx))))
 
         ;; not full height is used but rather we are filling both sides top-down
         h1 (* scale-y (target-weight linear-scale source))
