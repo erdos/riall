@@ -1,5 +1,6 @@
 (ns riall.config
-  "Database of configuration options")
+  "Database of configuration options"
+  (:require [riall.graph]))
 
 ;; the parsed model
 (def ^:dynamic *model*)
@@ -43,6 +44,8 @@
 (defcfg [node width] 15
   "Width of nodes.")
 
+(defcfg [node-hidden width] 0 "implementation detail")
+
 (defcfg [node shape rx] 0
   "Horizontal rounding of the node's rectangle")
 (defcfg [node shape ry] 0 
@@ -83,6 +86,10 @@
    ;; value configured for this node specifically.
    (get-model-config node path)
 
+   (when (@#'riall.graph/hidden-node? node)
+     (or (get-model-config :node-hidden path)
+         (::default (get-in configuration (cons :node-hidden path)))))
+   
    ;; node is both source and sink
    (condp = [(some? (get-in *model* [:incoming-edges node]))
              (some? (get-in *model* [:outgoing-edges node]))]

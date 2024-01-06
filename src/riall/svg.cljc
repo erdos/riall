@@ -89,12 +89,17 @@
   (-> edge :edge/target node->color))
 
 (defn render-edge [{:as cfg :keys [scale-x scale-y]} {:edge/keys [id source target back?] :as e}]
+  (assert (not back?))
   (let [[src-top% src-height% trg-top% trg-height%] (edge->ratios id)
-        [x1 y1] (node->bbox source)
-        [x2 y2] (node->bbox target)
+        [x1 y1 src-width] (node->bbox source)
+        [x2 y2 dst-width] (node->bbox target)
         [x1 y1] (projecting cfg [x1 y1])
         [x2 y2] (projecting cfg [x2 y2])
-                ;; not full height is used but rather we are filling both sides top-down
+
+        x1 (+ x1 (/ src-width 2))
+        x2 (- x2 (/ dst-width 2))
+
+        ;; not full height is used but rather we are filling both sides top-down
         h1 (* scale-y (target-weight linear-scale source))
         h2 (* scale-y (source-weight linear-scale target))
         w1 (* src-top% h1)
