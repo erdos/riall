@@ -66,6 +66,7 @@
                               (get-node-config node :stroke :color))}]
      [:text {:x (+ x x-off)
              :y my
+             :filter "url(#labelbg)"
              :fill (get-node-config node :label :color)
              :alignment-baseline "middle"
              :text-anchor anchor

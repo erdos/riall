@@ -38,7 +38,12 @@
            :width width
            :height height
            :viewBox (format "0 0 %d %d" (long width) (long height))}
-     [:defs (map svg/edge-gradient (set (for [e (vals (id->edge))] (or (:edge/original e) e))))]
+     [:defs
+      (map svg/edge-gradient (set (for [e (vals (id->edge))] (or (:edge/original e) e))))
+      (when-let [color (get-config :node :label :background)]
+        [:filter {:id "labelbg" :x -0.1 :y -0.1 :width 1.2 :height 1.2}
+         [:feFlood {:flood-color color}]
+         [:feComposite {:in "SourceGraphic" :operator "over"}]])]
      \newline
      (when-let [fill (get-config :canvas :background)]
        [:rect {:width "100%" :height "100%" :fill fill}])

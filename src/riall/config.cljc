@@ -54,6 +54,9 @@
 (defcfg [node label color] "black"
   "Color of node label text")
 
+(defcfg [node label background] "rgba(255,255,255,0.2)"
+  "Backgroud color of node labels.")
+
 (defcfg [column width] 120
   "Width of logical columns")
 

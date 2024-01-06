@@ -49,6 +49,7 @@ set node.opacity 1.0
 set node.shape.rx 3
 set node.shape.ry 3
 set node.label.align center
+set node.label.background rgba(255,255,255,0.2)
 ```
 
 For edge properties:
