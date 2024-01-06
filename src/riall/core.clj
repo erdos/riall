@@ -2,15 +2,17 @@
   (:gen-class)
   (:require [clojure.string :as str]
             [riall.common :refer [*debug*]]
-            [riall.config :refer [get-config]]
+            [riall.config :refer [get-config *model*]]
             [riall.layout :refer [layouts]]
             [riall.model :refer :all]
-            [riall.style :refer :all] [riall.parse]
+            [riall.style :refer :all]
+            [riall.parse]
             [riall.svg :as svg :refer [hiccup]]))
 
 
 (set! *warn-on-reflection* true)
 
+(def version "development")
 
 (defn get-canvas-dimensions []
   (let [margin (get-config :canvas :margin)
@@ -83,9 +85,17 @@
 
 
 (defn -main [& args]
-  (binding [*debug* (boolean (some #{"--debug"} args))]
-    (let [input (->> *in*
-                     (slurp) (clojure.string/split-lines)
-                     (sequence riall.parse/xform))]
-      (binding [*model* (parsed->model input)]
-        (render-svg)))))
+  (cond (some #{"--help"} args)
+        (println "Check https://github.com/erdos/riall for help.")
+
+        (some #{"--version"} args)
+        (println "Riall version" version)
+
+        :else
+        (binding [*debug* (boolean (some #{"--debug"} args))]
+          (let [input (->> *in*
+                           (slurp) (clojure.string/split-lines)
+                           (sequence riall.parse/xform))]
+            (binding [*model* (parsed->model input)]
+              (render-svg)
+              (flush))))))

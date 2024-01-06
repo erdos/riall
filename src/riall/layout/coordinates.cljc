@@ -3,6 +3,8 @@
   (:require [clojure.math :as math]
             [riall.common :refer [mean +inf mean]]))
 
+(set! *warn-on-reflection* true)
+
 ;; makes coordinate expressions easier to read
 (defmacro ^:private idx-> [f a x y & v] `(~f ~a (+ ~x (* (mod ~y ~'max-height) (inc ~'max-x))) ~@v))
 
@@ -34,7 +36,7 @@
           costs      (double-array (* (inc max-x) max-height))
           score-at   (fn [x y] (node-score node->parents heights node->y (nth layer x) y))]
       (dotimes [x max-x]
-        (idx-> aset costs x max-y +inf))
+        (idx-> aset costs x max-y (double +inf)))
       (dotimes [y' max-y]
         (dotimes [x (min max-x (- max-y y'))] ;; 0 1 2 ... mx-1 <---- but order does not matter.
           (let [y          (- max-y y' 1)
@@ -44,7 +46,7 @@
                              +inf)
                 cost-skip  (idx-> aget costs x (inc y))]
             (if (< cost-place cost-skip)
-              (do (idx-> aset costs x y cost-place)
+              (do (idx-> aset costs x y (double cost-place))
                   (idx-> aset states x y (cons y (idx-> aget states (inc x) jump-y))))
               (do (idx-> aset costs x y cost-skip)
                   (idx-> aset states x y (idx-> aget states x (inc y))))))))

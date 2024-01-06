@@ -1,6 +1,6 @@
 (ns riall.svg
   (:require [clojure.string :as str]
-            [riall.config :refer [get-config get-edge-config get-node-config]]
+            [riall.config :refer [get-config get-edge-config get-node-config *model*]]
             [riall.model :refer :all]
             [riall.style :refer [node->color target-weight source-weight]]))
 
@@ -66,6 +66,7 @@
                               (get-node-config node :stroke :color))}]
      [:text {:x (+ x x-off)
              :y my
+             :fill (get-node-config node :label :color)
              :alignment-baseline "middle"
              :text-anchor anchor
              :font-family "Arial, Helvetica, sans-serif"

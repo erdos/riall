@@ -1,6 +1,9 @@
 (ns riall.config
   "Database of configuration options")
 
+;; the parsed model
+(def ^:dynamic *model*)
+
 (def ^:private configuration {})
 
 (defmacro ^:private defcfg [path default descr]
@@ -27,14 +30,6 @@
 (defcfg [edge stroke width] 1
   "Width of edge stroke.")
 
-;; TODO: top, bottom, center, stretch
-;(defcfg [edge justify] "top"
-;  "Justification of edge. Values: top bottom center stretch")
-;(defcfg [edge source justify] [edge justify]
-;  "Justification of edge on the source side.")
-;(defcfg [edge target justify] [edge justify]
-;  "Justification of edge on the source side.")
-
 (defcfg [node background] "tableau10"
   "Default background of edges.")
 (defcfg [node opacity] 1.0
@@ -48,14 +43,20 @@
 (defcfg [node width] 15
   "Width of nodes.")
 
-(defcfg [node shape rx] 0 "Horizontal rounding of the node's rectangle")
-(defcfg [node shape ry] 0 "Vertical rounding of the node's rectangle")
+(defcfg [node shape rx] 0
+  "Horizontal rounding of the node's rectangle")
+(defcfg [node shape ry] 0 
+  "Vertical rounding of the node's rectangle")
 
 (defcfg [node label align] "center"
   "Node label alignment: left, right, center")
 
+(defcfg [node label color] "black"
+  "Color of node label text")
+
 (defcfg [column width] 120
   "Width of logical columns")
+
 
 (defn config-exists? [config]
   (boolean (get-in configuration (conj (:config/path config) ::description))))
@@ -64,14 +65,40 @@
   (assert (every? keyword? path))
   (assert (contains? (get-in configuration path) ::description)
           (pr-str ["Unknown configuration!" configuration path]))
-  `(or  (assert riall.model/*model*)
-        (some-> (get-in riall.model/*model* [:config ~@path :value]) ~(::parser (get-in configuration path)))
+  `(or  (assert *model*)
+        (some-> (get-in *model* [:config ~@path :value]) ~(::parser (get-in configuration path)))
        ~(::default (get-in configuration path))))
 
-;; 
+(defn- get-model-config [selector path]
+  (assert *model*)
+  (assert (contains? (get-in configuration (cons :node path)) ::description))
+  (when-let [value (get-in *model* (concat [:config selector] path [:value]))]
+    ((::parser (get-in configuration (cons :node path))) value)))
+
+(defn -get-node-config [node path]
+  (or
+   ;; value configured for this node specifically.
+   (get-model-config node path)
+
+   ;; node is both source and sink
+   (condp = [(some? (get-in *model* [:incoming-edges node]))
+             (some? (get-in *model* [:outgoing-edges node]))]
+     [true false] (get-model-config :node-sink path)
+     [false true] (get-model-config :node-source path)
+     [false false] (get-model-config :node-isolated path))
+
+   (get-model-config :node path)
+
+   ;; default value for any nodes
+   (::default (get-in configuration (cons :node path)))))
+
+;; resolves configuration for node
+;; - first, by id
+;; - last, from general node config or the default value
 (defmacro get-node-config [node & path]
   (assert (symbol? node))
-  `(get-config :node ~@path))
+  (assert (every? keyword? path))
+  `(-get-node-config ~node [~@path]))
 
 (defmacro get-edge-config [edge & path]
   (assert (symbol? edge))

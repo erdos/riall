@@ -1,6 +1,8 @@
 (ns riall.parse
   (:require [clojure.string :as str]))
 
+(set! *warn-on-reflection* true)
+
 ;; TODO: let me read floatingpt weights as well.
 
 (defn- parse-edge [line]
@@ -12,8 +14,8 @@
 
 
 (defn parse-config [line]
-  (when-let [[_ path value] (re-matches #"set +([a-zA-Z.]+) +([^ ]?.*[^ ]) *$" line)]
-    {:config/path  (mapv keyword (.split path "\\."))
+  (when-let [[_ path value] (re-matches #"set +([a-zA-Z.\-]+) +([^ ]?.*[^ ]) *$" line)]
+    {:config/path  (mapv keyword (.split ^String path "\\."))
      :config/value value}))
 
 

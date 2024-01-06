@@ -1,10 +1,8 @@
 (ns riall.model
-  (:require [riall.config :refer [get-config get-node-config]]
+  (:require [riall.config :refer [get-config get-node-config *model*]]
             [riall.layout :refer :all]
             [riall.style :refer :all]
             [riall.common :refer :all]))
-
-(def ^:dynamic *model*)
 
 (defn node-pos
   ([] (doto (:coords *model*) assert))
