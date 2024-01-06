@@ -30,7 +30,7 @@
 (defcfg [edge stroke width] 1
   "Width of edge stroke.")
 
-(defcfg [node background] "tableau10"
+(defcfg [node background] "theme"
   "Default background of edges.")
 (defcfg [node opacity] 1.0
   "Opacity of node. Value is between 0.0 (fully transparent) to 1.0 (fully opaque).")
@@ -85,7 +85,8 @@
              (some? (get-in *model* [:outgoing-edges node]))]
      [true false] (get-model-config :node-sink path)
      [false true] (get-model-config :node-source path)
-     [false false] (get-model-config :node-isolated path))
+     [false false] (get-model-config :node-isolated path)
+     nil)
 
    (get-model-config :node path)
 

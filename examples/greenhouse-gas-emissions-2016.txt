@@ -1,6 +1,13 @@
 # World Greenhouse Gas Emissions in 2016 (Sector | End Use | Gas)
 # Source: https://www.climatewatchdata.org/key-visualizations?visualization=15
 
+set node.label.align right
+set node-sink.label.align left
+set node.stroke.color black
+set node.stroke.width 1
+set edge.background target
+set edge.background.opacity 0.3
+
 Energy: Transportation [1186] Road
 Energy: Transportation [18] Rail
 Energy: Transportation [29] Pipeline

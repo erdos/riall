@@ -61,3 +61,6 @@ Mali [3] Japan
 Morocco [5] China
 Morocco [1] India
 Morocco [3] Japan
+
+set node.label.align right
+set node-sink.label.align left
