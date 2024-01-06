@@ -50,12 +50,10 @@
      (when *debug*
        [:g (svg/render-debug cfg)])
      (for [b? [false true]
-           {:edge/keys [back?] :as edge} (sort-by :edge/weight > (vals (id->edge)))
-           :when (nil? (:edge/original edge))
-           :when (= b? back?)]
-       (if back?
-         (svg/render-backedge cfg edge)
-         (svg/render-edge cfg edge)))
+           edge (sort-by :edge/weight > (vals (id->edge)))
+           :when (= b? (:edge/back? edge))
+           :when (nil? (:edge/original edge))]
+       (svg/render-edge cfg edge))
      (->> (id->edge) (vals) (sort-by :edge/id)
           (filter :edge/original) (group-by :edge/original) (vals)
           (map (partial svg/render-edge-seq cfg)))

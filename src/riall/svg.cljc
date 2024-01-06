@@ -88,7 +88,7 @@
 (defmethod edge-fill "target" [edge]
   (-> edge :edge/target node->color))
 
-(defn render-edge [{:as cfg :keys [scale-x scale-y]} {:edge/keys [id source target back?] :as e}]
+(defn- render-frontedge [{:as cfg :keys [scale-x scale-y]} {:edge/keys [id source target back?] :as e}]
   (assert (not back?))
   (let [[src-top% src-height% trg-top% trg-height%] (edge->ratios id)
         [x1 y1 src-width] (node->bbox source)
@@ -136,9 +136,9 @@
                                   [[:Z]]))}
        (vector :path)
        (let [original (-> edges first :edge/original)
-             paths    (for [e edges] (-> (render-edge cfg e) second :d seq))])))
+             paths    (for [e edges] (-> (render-frontedge cfg e) second :d seq))])))
 
-(defn render-backedge [{:as cfg :keys [scale-x scale-y height margin] }
+(defn- render-backedge [{:as cfg :keys [scale-x scale-y height margin] }
                        {:edge/keys [id source target back?] :as edge}]
   (let [[src-top% src-height% trg-top% trg-height%] (edge->ratios id)
         [x1 y1] (projecting cfg (node->bbox source))
@@ -150,7 +150,6 @@
         w2 (* trg-top% h2)
         r1 (* src-height% h1)
         r2 (* trg-height% h2)
-        handle (* scale-x 44)
         off 10
         t  (- height margin)]
     [:path {:fill         (edge-fill edge)
@@ -177,6 +176,11 @@
                        [:V (+ y1 w1 r1)]
                        [:h (- off)]
                        [:z])}]))
+
+(defn render-edge [cfg edge]
+  (if (:edge/back? edge)
+    (render-backedge cfg edge)
+    (render-frontedge cfg edge)))
 
 (defn render-debug [{:as cfg :keys [width height margin]}]
   [:g
