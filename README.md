@@ -2,14 +2,20 @@
 
 A simple tool to generate [Sankey diagrams](https://en.wikipedia.org/wiki/Sankey_diagram) from text input.
 
+<table>
+  <tr>
+    <td><img width="240" src="https://github.com/erdos/riall/assets/5559823/29efb2d0-9ba9-43a9-8bcd-b75889edca8d"/></td>
+    <td><img width="240" src="https://github.com/erdos/riall/assets/5559823/c7258059-ac99-4bec-a82d-24788fc1232c"/></td>
+    <td><img width="240" src="https://github.com/erdos/riall/assets/5559823/81de01bc-3ff0-418f-adbf-4e21e7d4c5ec"/></td>
+  </tr>
+</table>
+
 ## Features
 
 - Text in, SVG out
 - Supports circular graphs, cycles are drawn with back edges
 - Optimizes layout to minimize edge crossings
 - Standalone application works offline
-
-## Roadmap
 
 ## Usage
 
