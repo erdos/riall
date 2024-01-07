@@ -96,19 +96,20 @@ comment)
             (for [n nodes] (max (transduce (map :edge/weight) + (node->incoming n))
                                 (transduce (map :edge/weight) + (node->outgoing n)))))))
 
+(def resolution 6)
+
 (defn assign-coordinates [layers edges]
   (let [node->weight (node-weight edges)
         edges        (remove :edge/back? edges)
         nodes      (keys node->weight)
         max-weight (apply max (vals node->weight))
-        max-logical-width 6 ;; could come from parameter?
         ;; FIXME: we should consider scales when we get there
 
         ;;; logical heights of each node
-        heights (update-vals node->weight (fn [weight] (long (math/ceil (/ (* weight max-logical-width) max-weight)))))
+        heights (update-vals node->weight (fn [weight] (long (math/ceil (/ (* weight resolution) max-weight)))))
         
         ;; pessimistic scenario, when all the wide nodes are on the same layer
-        max-y (* max-logical-width (reduce max (map count layers)))
+        max-y (* resolution (reduce max (map count layers)))
 
         solve-forwards (build-layer-solver (node-parents edges) heights max-y)
         solve-backward (build-layer-solver (node-children edges) heights max-y)
@@ -124,7 +125,7 @@ comment)
         coordinates  (reduce-kv (fn [m x layer]
                                   (reduce (fn [m n] (assoc m n [x (- (node->y n) min-y)])) m (vec layer)))
                                 {} (vec layers))
-        grid-heights (repeat (- max-y min-y) (/ max-weight max-logical-width))]
+        grid-heights (repeat (- max-y min-y) (/ max-weight resolution))]
     {:coordinates          coordinates
      :node-logical-heights heights
      :grid-heights         grid-heights}))
