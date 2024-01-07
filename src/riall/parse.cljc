@@ -13,10 +13,13 @@
      :edge/weight (parse-double weight)}))
 
 
+(def known-prefixes
+  #{"canvas" "edge" "node" "column" "node-sink" "node-source" "node-isolated" "node-hidden"})
+
 (defn parse-config [line]
   (when-let [[_ path value] (re-matches #"set +([a-zA-Z.\-]+) +([^ ]?.*[^ ]) *$" line)]
     (let [[p & path] (seq (.split ^String path "\\."))
-          p (case p ("canvas" "edge" "node" "column") (keyword p) p)]
+          p (if (known-prefixes p) (keyword p) p)]
       {:config/path  (into [p] (map keyword) path)
        :config/value value})))
 
