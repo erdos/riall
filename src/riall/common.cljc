@@ -2,7 +2,7 @@
 
 (set! *warn-on-reflection* true)
 
-(def ^:dynamic *debug*)
+(def ^:dynamic *debug* false)
 
 (defn index-of [coll elem]
   (let [idx (.indexOf ^java.util.List coll elem)]
