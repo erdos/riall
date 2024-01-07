@@ -1,8 +1,9 @@
 (ns riall.svg
   (:require [clojure.string :as str]
-            [riall.config :refer [get-config get-edge-config get-node-config *model*]]
+            [riall.config :refer [get-edge-config get-node-config *model*]]
             [riall.model :refer :all]
-            [riall.style :refer [node->color target-weight source-weight]]))
+            [riall.style :refer [node->color target-weight source-weight]]
+            [riall.common :refer [mean]]))
 
 (defn path-d [& xs]
   (reify
@@ -184,28 +185,43 @@
     (render-backedge cfg edge)
     (render-frontedge cfg edge)))
 
-;; returns an edge label to be placed near the source node
-(defn render-edge-src-label [{:as cfg :keys [scale-y]} {:as edge :edge/keys [source id weight original]}]
-  (when (or (not original) (= source (:edge/source original)))
-    (let [[src-top% src-height% _ _] (edge->ratios id)
+;; return [x y] tuple of label position
+(defn- edge-label-position [{:as cfg :keys [scale-y]} {:edge/keys [source target id]}]
+  #_(let [[src-top% src-height% _ _] (edge->ratios id)
           [x1 y1 src-width] (node->bbox source)
           [x1 y1] (projecting cfg [x1 y1])
           h1 (* scale-y (target-weight linear-scale source))
           w1 (* src-top% h1)
           r1 (* src-height% h1)]
-      [:text {:x (+ x1 5 (/ src-width 2))
-              :y (+ y1 w1 (/ r1 2))
+      [(+ x1 5 (/ src-width 2))
+       (+ y1 w1 (/ r1 2))])
+  (let [[src-top% src-height% dst-top% dst-height%] (edge->ratios id)
+        [x1 y1] (projecting cfg (node->bbox source))
+        h1 (* scale-y (target-weight linear-scale source))
+        w1 (* src-top% h1)
+        r1 (* src-height% h1)
+        [x2 y2] (projecting cfg (node->bbox target))
+        h2 (* scale-y (source-weight linear-scale target))
+        w2 (* dst-top% h2)
+        r2 (* dst-height% h2)]
+    [(mean [x1 x2])
+     (mean [(+ y1 w1 (/ r1 2)) (+ y2 w2 (/ r2 2))])]))
+
+;; returns an edge label to be placed near the source node
+(defn render-edge-src-label [cfg {:as edge :edge/keys [source weight original]}]
+  (when (or (not original) (= source (:edge/source original)))
+    (let [[x y] (edge-label-position cfg edge)]
+      [:text {:x x :y y
               :filter "url(#edgelabelbg)"
-              :text-anchor "left"
+              :text-anchor "middle"
               :alignment-baseline "middle"
               :dominant-baseline "middle"
               :font-family "Arial, Helvetica, sans-serif"
               :font-size   "11"
-              :font-weight (get-edge-config edge :label :font :weight)
-              }
+              :font-weight (get-edge-config edge :label :font :weight)}
        (str weight)])))
 
-(defn render-debug [{:as cfg :keys [width height margin]}]
+(defn render-debug [{:as cfg :keys [width margin]}]
   [:g
     (for [h (reductions + 0 (:grid-heights *model*))
           :let [[x y w _] (projecting cfg [0 h width 0])]]

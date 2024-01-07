@@ -60,7 +60,9 @@
      (->> (id->edge) (vals) (sort-by :edge/id)
           (filter :edge/original) (group-by :edge/original) (vals)
           (map (partial svg/render-edge-seq cfg)))
-     (for [edge (vals (id->edge))]
+     (for [edge (vals (id->edge))
+           :when (> (:edge/weight edge)
+                    (* 0.1 (reduce max (map :edge/weight (vals (id->edge))))))]
        (svg/render-edge-src-label cfg edge))
      (let [elems (for [n (all-nodes)
                        :when (or *debug* (not (riall.graph/hidden-node? n)))]
