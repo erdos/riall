@@ -12,7 +12,7 @@
     (if (= stable stable-1)
       (-> basis :version :snapshot)
       (let [envfile (System/getenv "GITHUB_ENV")]
-        (println :bumping-version stable-1)
+        (println :version-bump stable-1 '-> stable)
         (spit envfile (format "RELEASE_VERSION=%s\n" stable) :append true)
         stable))))
 

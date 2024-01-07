@@ -9,7 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
     - name: Install clojure tools
       uses: DeLaGuardo/setup-clojure@10.3
       with:
@@ -26,3 +28,11 @@ jobs:
       run: clojure -P
     - name: Run Clojure Tests
       run: clojure -M:test
+    - name: Uberjar
+      run: clojure -T:build uber
+    - name: New release
+      if: ${{ env.RELEASE_VERSION != '' }}
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "target/riall-*.jar"
+        tag: ${{ env.RELEASE_VERSION }}
