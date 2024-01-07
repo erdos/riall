@@ -11,6 +11,7 @@ Negative [36] Wasteful
 Negative [5] Quality
 Negative [22] Take time
 
+Services [13] Quality
 
 set canvas.margin 44
 set edge.background source
@@ -20,3 +21,7 @@ set node.stroke.width 0
 set node.shape.rx 3
 set node.shape.ry 3
 set node.width 80
+
+set Services.background gainsboro
+set Positive.background mediumseagreen
+set Negative.background indianred
