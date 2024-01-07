@@ -23,6 +23,9 @@
 (defcfg [edge background] "gradient"
   "Default background of edges. Either: 'source', 'gradient', 'target', or a color name.")
 
+(defcfg [edge label background] "rgba(215,215,215,0.2)"
+  "Backgroud color of edge labels.")
+
 (defcfg [edge opacity] 1.0
   "Opacity of edge. Value is between 0.0 (fully transparent) to 1.0 (fully opaque).")
 

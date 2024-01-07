@@ -68,7 +68,7 @@
              :y my
              :filter "url(#labelbg)"
              :fill (get-node-config node :label :color)
-             :alignment-baseline "middle"
+             :alignment-baseline "middle" :dominant-baseline "middle"
              :text-anchor anchor
              :font-family "Arial, Helvetica, sans-serif"
              :font-size   "11"}
@@ -181,6 +181,25 @@
   (if (:edge/back? edge)
     (render-backedge cfg edge)
     (render-frontedge cfg edge)))
+
+;; returns an edge label to be placed near the source node
+(defn render-edge-src-label [{:as cfg :keys [scale-y]} {:edge/keys [source id weight original]}]
+  (when (or (not original) (= source (:edge/source original)))
+    (let [[src-top% src-height% trg-top% trg-height%] (edge->ratios id)
+          [x1 y1 src-width] (node->bbox source)
+          [x1 y1] (projecting cfg [x1 y1])
+          h1 (* scale-y (target-weight linear-scale source))
+          w1 (* src-top% h1)
+          r1 (* src-height% h1)]
+      [:text {:x (+ x1 5 (/ src-width 2))
+              :y (+ y1 w1 (/ r1 2))
+              :filter "url(#edgelabelbg)"
+              :text-anchor "left"
+              :alignment-baseline "middle"
+              :dominant-baseline "middle"
+              :font-family "Arial, Helvetica, sans-serif"
+              :font-size   "11"}
+       (str weight)])))
 
 (defn render-debug [{:as cfg :keys [width height margin]}]
   [:g

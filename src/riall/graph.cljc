@@ -123,15 +123,17 @@
 
 ;; Calculate number of edge crossings in a bipartite graph
 ;; TODO: this is one very naive implementation and we can surely improve it.
-(defn layer-crossings [node->parents nodes parents]
-  (with-local-vars [s (sorted-map-by (fn [a b] (compare (index-of parents a) (index-of parents b)))), n 0]
-    (doseq [node nodes
-            parent (sort-by #(or (index-of parents %) 999) (node->parents node))
-            :when  (index-of parents parent)
-            :let [greater (transduce (map second) + (subseq (var-get s) > parent))]]
-      (var-set n (+ (var-get n) greater))
-      (var-set s (update (var-get s) parent (fnil inc 0))))
-    (var-get n)))
+(comment
+  (defn layer-crossings [node->parents nodes parents]
+    (with-local-vars [s (sorted-map-by (fn [a b] (compare (index-of parents a) (index-of parents b)))), n 0]
+      (doseq [node nodes
+              parent (sort-by #(or (index-of parents %) 999) (node->parents node))
+              :when  (index-of parents parent)
+              :let [greater (transduce (map second) + (subseq (var-get s) > parent))]]
+        (var-set n (+ (var-get n) greater))
+        (var-set s (update (var-get s) parent (fnil inc 0))))
+      (var-get n)))
+  :end-of-comment)
 
 ;; calculate number of edge crossings in a bipartite graph
 (defn layer-crossings [node->parents nodes parents]

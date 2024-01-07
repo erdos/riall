@@ -43,6 +43,10 @@
       (when-let [color (get-config :node :label :background)]
         [:filter {:id "labelbg" :x -0.1 :y -0.1 :width 1.2 :height 1.2}
          [:feFlood {:flood-color color}]
+         [:feComposite {:in "SourceGraphic" :operator "over"}]])
+      (when-let [color (get-config :edge :label :background)]
+        [:filter {:id "edgelabelbg" :x -0.1 :y -0.1 :width 1.2 :height 1.2}
+         [:feFlood {:flood-color color}]
          [:feComposite {:in "SourceGraphic" :operator "over"}]])]
      \newline
      (when-let [fill (get-config :canvas :background)]
@@ -57,6 +61,8 @@
      (->> (id->edge) (vals) (sort-by :edge/id)
           (filter :edge/original) (group-by :edge/original) (vals)
           (map (partial svg/render-edge-seq cfg)))
+     (for [edge (vals (id->edge))]
+       (svg/render-edge-src-label cfg edge))
      (let [elems (for [n (all-nodes)
                        :when (or *debug* (not (riall.graph/hidden-node? n)))]
                    (svg/render-node cfg n))]
