@@ -3,7 +3,8 @@
             [clojure.test :refer [deftest testing is are]]))
 
 (deftest test-build-layer-solver
-  (let [t (build-layer-solver {1 [11 12] 2 [21 22] 3 [33] 4 []}
+  (let [t (build-layer-solver (constantly 1)
+                              {1 [11 12] 2 [21 22] 3 [33] 4 []}
                               {1 2, 2 2, 3 3, 4 1,
                                11 1, 12 1, 21 1, 22 1, 33 1} ;; heights
                               20)]

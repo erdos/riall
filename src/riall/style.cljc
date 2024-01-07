@@ -13,16 +13,6 @@
 
 (defmethod node->color :default [node] (get-node-config node :background))
 
-;; Used to get the sizes of the boxes
-;; Eg.: ->LinearScale, ->LogScale ...
-(defprotocol NodeScale
-  (source-weight [_ node])
-  (target-weight [_ node]))
-
-(defn weight [scale node]
-  (max (source-weight scale node)
-       (target-weight scale node)))
-
 ;; Returns the scale assigned to the node or the default scale
 ; (defn node-scale [node] )
 

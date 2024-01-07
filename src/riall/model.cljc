@@ -25,12 +25,11 @@
 (defn all-nodes [] (:nodes *model*))
 (defn id->edge ([] (:id->edge *model*)) ([id] (get-in *model* [:id->edge id])))
 
-(def linear-scale
-  (reify NodeScale
-    (source-weight [_ node]
-      (transduce (map :edge/weight) + (incoming-edges node)))
-    (target-weight [_ node]
-      (transduce (map :edge/weight) + (outgoing-edges node)))))
+(defn source-weight [node]
+  (transduce (map :edge/weight) + (incoming-edges node)))
+
+(defn target-weight [node]
+  (transduce (map :edge/weight) + (outgoing-edges node)))
 
 (defn get-column-width []
   (get-config :column :width))
@@ -40,12 +39,16 @@
                                 (assert *model*) :middle))
 ;; TODO: get dispatch from config
 
+(defn weight [node]
+  (max (transduce (map :edge/weight) + (incoming-edges node))
+       (transduce (map :edge/weight) + (outgoing-edges node))))
+
 (defmethod node->bbox :middle [node]
   (let [[x y]   (node-pos node)
         lo-he   (get-in *model* [:node-logical-heights node])
         top-pos (transduce (take y) + (:grid-heights *model*))
         grid-height (reduce + (take lo-he (drop y (:grid-heights *model*))))
-        height  (weight linear-scale node)]
+        height  (weight node)]
     [(* (get-column-width) x)
      (+ top-pos (/ (- grid-height height) 2))
      (get-node-config node :width)
@@ -56,13 +59,13 @@
     [(* (get-column-width) x)
      (transduce (take y) + (:grid-heights *model*)) ;; sum of every heights above
      (get-node-config node :width)
-     (weight linear-scale node)]))
+     (weight node)]))
 
 (defmethod node->bbox :bottom [node]
   (let [[x y]      (node-pos node)
         lo-he      (get-in *model* [:node-logical-heights node])
         bottom-pos (reduce + (take (+ lo-he y) (:grid-heights *model*)))
-        height     (weight linear-scale node)]
+        height     (weight node)]
     [(* (get-column-width) x)
      (- bottom-pos height)
      (get-node-config node :width)

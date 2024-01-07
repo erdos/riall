@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [riall.config :refer [get-edge-config get-node-config *model*]]
             [riall.model :refer :all]
-            [riall.style :refer [node->color target-weight source-weight]]
+            [riall.style :refer [node->color]]
             [riall.common :refer [mean]]))
 
 (defn path-d [& xs]
@@ -103,8 +103,8 @@
         x2 (- x2 (max 0 (- (/ dst-width 2) (get-node-config target :shape :rx))))
 
         ;; not full height is used but rather we are filling both sides top-down
-        h1 (* scale-y (target-weight linear-scale source))
-        h2 (* scale-y (source-weight linear-scale target))
+        h1 (* scale-y (target-weight source))
+        h2 (* scale-y (source-weight target))
         w1 (* src-top% h1)
         w2 (* trg-top% h2)
         r1 (* src-height% h1)
@@ -147,8 +147,8 @@
         [x1 y1] (projecting cfg (node->bbox source))
         [x2 y2] (projecting cfg (node->bbox target))
                 ;; not full height is used but rather we are filling both sides top-down
-        h1 (* scale-y (target-weight linear-scale source))
-        h2 (* scale-y (source-weight linear-scale target))
+        h1 (* scale-y (target-weight source))
+        h2 (* scale-y (source-weight target))
         w1 (* src-top% h1)
         w2 (* trg-top% h2)
         r1 (* src-height% h1)
@@ -197,11 +197,11 @@
        (+ y1 w1 (/ r1 2))])
   (let [[src-top% src-height% dst-top% dst-height%] (edge->ratios id)
         [x1 y1] (projecting cfg (node->bbox source))
-        h1 (* scale-y (target-weight linear-scale source))
+        h1 (* scale-y (target-weight source))
         w1 (* src-top% h1)
         r1 (* src-height% h1)
         [x2 y2] (projecting cfg (node->bbox target))
-        h2 (* scale-y (source-weight linear-scale target))
+        h2 (* scale-y (source-weight target))
         w2 (* dst-top% h2)
         r2 (* dst-height% h2)]
     [(mean [x1 x2])

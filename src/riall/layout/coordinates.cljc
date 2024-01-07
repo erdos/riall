@@ -9,14 +9,14 @@
 (defmacro ^:private idx-> [f a x y & v] `(~f ~a (+ ~x (* (mod ~y ~'max-height) (inc ~'max-x))) ~@v))
 
 ;; Calculates the score to minimize when node is placed on y
-(defmulti node-score (fn [node->parents heights node->y node y] :midbox))
+(defmulti node-score (fn [edge-weight-fn node->parents heights node->y node y] :sq-weighted))
 
 ;; distance quare sum between top vertical positions of nodes
-(defmethod node-score :top-sq [node->parents heights node->y node y]
+(defmethod node-score :top-sq [_ node->parents _ node->y node y]
   (reduce + (for [p (node->parents node)] (math/pow (- y (node->y p)) 2))))
 
 ;; distance square to midpoint of parents' convex hull
-(defmethod node-score :midbox [node->parents heights node->y node y]
+(defmethod node-score :midbox [_ node->parents heights node->y node y]
   (if (seq (node->parents node))
     (let [p-top (reduce min (for [p (node->parents node)] (node->y p)))
           p-btm (reduce max (for [p (node->parents node)] (+ (node->y p) (heights p))))]
@@ -24,17 +24,23 @@
     0))
 
 ;; distance square sum between the midpoints of nodes
-(defmethod node-score :sq [node->parents heights node->y node y]
+(defmethod node-score :sq [_ node->parents heights node->y node y]
   (reduce + (for [p (node->parents node)]
                (math/pow (- (+ y (/ (heights node) 2)) (+ (node->y p) (/ (heights p) 2))) 2))))
 
-(defn build-layer-solver [node->parents heights max-y]
+;; distance square sum between the midpoints of nodes, weighted by node
+(defmethod node-score :sq-weighted [edge-weight-fn node->parents heights node->y node y]
+  (reduce + (for [p (node->parents node)]
+              (* (edge-weight-fn p node)
+                 (math/pow (- (+ y (/ (heights node) 2)) (+ (node->y p) (/ (heights p) 2))) 2)))))
+
+(defn build-layer-solver [edge-weight-fn node->parents heights max-y]
   (fn [node->y layer]
     (let [max-x      (count layer)
           max-height (transduce (map heights) max 1 layer)
           states     (object-array (* (inc max-x) max-height))
           costs      (double-array (* (inc max-x) max-height))
-          score-at   (fn [x y] (node-score node->parents heights node->y (nth layer x) y))]
+          score-at   (fn [x y] (node-score edge-weight-fn node->parents heights node->y (nth layer x) y))]
       (dotimes [x max-x]
         (idx-> aset costs x max-y (double +inf)))
       (dotimes [y' max-y]
@@ -72,7 +78,7 @@
                 (let [delta (node-score node->parents heights state (nth layer x) y)]
                   (min-key first [(+ score delta) (assoc state' (first layer) y)]
                                 (f layer (inc y)))))))))
-  (defn build-layer-solver [node->parents heights max-y]
+  (defn build-layer-solver [_ node->parents heights max-y]
     (assert (every? pos-int? (vals heights)))
     (fn [node->y layer]
       (let [[score node->y] ((build-layer-solver-1 node->parents heights node->y max-y) layer 0)]
@@ -93,8 +99,8 @@ comment)
         node->outgoing (group-by :edge/source edges)
         nodes          (set (concat (keys node->incoming) (keys node->outgoing)))]
     (zipmap nodes
-            (for [n nodes] (max (transduce (map :edge/weight) + (node->incoming n))
-                                (transduce (map :edge/weight) + (node->outgoing n)))))))
+            (for [n nodes] (do (do (max (transduce (map :edge/weight) + (node->incoming n))
+                                        (transduce (map :edge/weight) + (node->outgoing n))))) ))))
 
 (def resolution 6)
 
@@ -104,22 +110,27 @@ comment)
         nodes      (keys node->weight)
         max-weight (apply max (vals node->weight))
         ;; FIXME: we should consider scales when we get there
-
+        
         ;;; logical heights of each node
         heights (update-vals node->weight (fn [weight] (long (math/ceil (/ (* weight resolution) max-weight)))))
         
         ;; pessimistic scenario, when all the wide nodes are on the same layer
         max-y (* resolution (reduce max (map count layers)))
 
-        solve-forwards (build-layer-solver (node-parents edges) heights max-y)
-        solve-backward (build-layer-solver (node-children edges) heights max-y)
+        edge-weight-fn (fn [parent node]
+                         (reduce + (for [e edges
+                                         :when (= parent (:edge/source e))
+                                         :when (= node (:edge/target e))]
+                                     (:edge/weight e))))
+        solve-forwards (build-layer-solver edge-weight-fn (node-parents edges) heights max-y)
+        solve-backward (build-layer-solver edge-weight-fn (node-children edges) heights max-y)
 
         ;; we do multiple iterations: forward-backward-forward
         node->y (as-> {} m
                   (reduce solve-forwards m layers)
                   (reduce solve-backward m (next (reverse layers))) ;; last layer is fixed
                   (reduce solve-forwards m (next layers))) ;; first layer is fixed
-
+        
         ;; elements are not filled from the top so we need to push it back
         min-y        (reduce min (vals node->y))
         coordinates  (reduce-kv (fn [m x layer]
