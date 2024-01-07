@@ -5,7 +5,6 @@
             [riall.config :refer [get-config *model*]]
             [riall.layout :refer [layouts]]
             [riall.model :refer :all]
-            [riall.style :refer :all]
             [riall.parse]
             [riall.svg :as svg :refer [hiccup]]))
 
@@ -92,6 +91,9 @@
      :nodes          (set (mapcat (juxt :edge/source :edge/target) edges))
      :id->edge       (reduce (fn [m e] (assoc m (:edge/id e) e)) {} edges)}))
 
+(defn lines->svg! [lines]
+  (binding [*model* (parsed->model (sequence riall.parse/xform lines))]
+    (render-svg)))
 
 (defn -main [& args]
   (cond (some #{"--help"} args)
@@ -102,9 +104,5 @@
 
         :else
         (binding [*debug* (boolean (some #{"--debug"} args))]
-          (let [input (->> *in*
-                           (slurp) (clojure.string/split-lines)
-                           (sequence riall.parse/xform))]
-            (binding [*model* (parsed->model input)]
-              (render-svg)
-              (flush))))))
+          (->> *in* slurp clojure.string/split-lines lines->svg!)))
+  (flush))
