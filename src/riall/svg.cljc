@@ -71,7 +71,9 @@
              :alignment-baseline "middle" :dominant-baseline "middle"
              :text-anchor anchor
              :font-family "Arial, Helvetica, sans-serif"
-             :font-size   "11"}
+             :font-size   "11"
+             :font-weight (get-node-config node :label :font :weight)
+             }
             (str node)])))
 
 (defmulti edge-fill (fn [edge] (get-edge-config edge :background)))
@@ -183,9 +185,9 @@
     (render-frontedge cfg edge)))
 
 ;; returns an edge label to be placed near the source node
-(defn render-edge-src-label [{:as cfg :keys [scale-y]} {:edge/keys [source id weight original]}]
+(defn render-edge-src-label [{:as cfg :keys [scale-y]} {:as edge :edge/keys [source id weight original]}]
   (when (or (not original) (= source (:edge/source original)))
-    (let [[src-top% src-height% trg-top% trg-height%] (edge->ratios id)
+    (let [[src-top% src-height% _ _] (edge->ratios id)
           [x1 y1 src-width] (node->bbox source)
           [x1 y1] (projecting cfg [x1 y1])
           h1 (* scale-y (target-weight linear-scale source))
@@ -198,7 +200,9 @@
               :alignment-baseline "middle"
               :dominant-baseline "middle"
               :font-family "Arial, Helvetica, sans-serif"
-              :font-size   "11"}
+              :font-size   "11"
+              :font-weight (get-edge-config edge :label :font :weight)
+              }
        (str weight)])))
 
 (defn render-debug [{:as cfg :keys [width height margin]}]

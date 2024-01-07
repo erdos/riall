@@ -26,6 +26,9 @@
 (defcfg [edge label background] "rgba(215,215,215,0.2)"
   "Backgroud color of edge labels.")
 
+(defcfg [edge label font weight] "normal"
+  "Values: normal, bold, bolder, lighter")
+
 (defcfg [edge opacity] 1.0
   "Opacity of edge. Value is between 0.0 (fully transparent) to 1.0 (fully opaque).")
 
@@ -62,6 +65,9 @@
 
 (defcfg [node label background] "rgba(255,255,255,0.2)"
   "Backgroud color of node labels.")
+
+(defcfg [node label font weight] "bolder"
+  "Font weight of node label: normal, bold, bolder, lighter, or number.")
 
 (defcfg [column width] 120
   "Width of logical columns")
