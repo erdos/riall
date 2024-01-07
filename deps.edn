@@ -1,4 +1,6 @@
-{:deps {org.clojure/clojure {:mvn/version "1.11.1"}}
+{:version {:stable "0.1.0"
+           :snapshot "0.2.0-SNAPSHOT"}
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}}
  :paths ["src"]
  :aliases
  {:run {:exec-fn riall.core/-main}
