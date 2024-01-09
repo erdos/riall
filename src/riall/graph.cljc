@@ -137,7 +137,7 @@
 
 ;; calculate number of edge crossings in a bipartite graph
 (defn layer-crossings [node->parents nodes parents]
-  (->> (update-vals node->parents (fn [parents] (sort-by #(or (index-of parents %) 999) parents)))
+  (->> (update-vals node->parents (partial sort-by (partial index-of parents)))
        (reduce-kv (fn [n+s node parents]
                     (reduce (fn [[n s] parent]
                               [(+ n (transduce (map second) + (subseq s > parent)))
