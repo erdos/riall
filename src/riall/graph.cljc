@@ -1,7 +1,6 @@
 (ns riall.graph
-  (:require [clojure.set :refer [difference union]]
-            [clojure.string :refer [starts-with?]]
-            [riall.common :refer :all]))
+  (:require [clojure.string :refer [starts-with?]]
+            [riall.common :refer [fixpt index-of median]]))
 
 (set! *warn-on-reflection* true)
 

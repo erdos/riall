@@ -1,7 +1,7 @@
 (ns riall.layout.coordinates
   "Coordinate assignment step of the layout algorithm."
   (:require [clojure.math :as math]
-            [riall.common :refer [mean +inf mean]]))
+            [riall.common :refer [+inf]]))
 
 (set! *warn-on-reflection* true)
 
@@ -9,6 +9,7 @@
 (defmacro ^:private idx-> [f a x y & v] `(~f ~a (+ ~x (* (mod ~y ~'max-height) (inc ~'max-x))) ~@v))
 
 ;; Calculates the score to minimize when node is placed on y
+#_{:clj-kondo/ignore [:unused-binding]}
 (defmulti node-score (fn [edge-weight-fn node->parents heights node->y node y] :sq-weighted))
 
 ;; distance quare sum between top vertical positions of nodes
@@ -17,11 +18,11 @@
 
 ;; distance square to midpoint of parents' convex hull
 (defmethod node-score :midbox [_ node->parents heights node->y node y]
-  (if (seq (node->parents node))
-    (let [p-top (reduce min (for [p (node->parents node)] (node->y p)))
-          p-btm (reduce max (for [p (node->parents node)] (+ (node->y p) (heights p))))]
-      (math/pow (- (+ y (/ (heights node) 2) ) (/ (+ p-top p-btm) 2)) 2))
-    0))
+  (empty? (node->parents node))
+  0
+  (let [p-top (reduce min (for [p (node->parents node)] (node->y p)))
+        p-btm (reduce max (for [p (node->parents node)] (+ (node->y p) (heights p))))]
+    (math/pow (- (+ y (/ (heights node) 2)) (/ (+ p-top p-btm) 2)) 2)))
 
 ;; distance square sum between the midpoints of nodes
 (defmethod node-score :sq [_ node->parents heights node->y node y]
@@ -62,7 +63,7 @@
 ;; --------------
 
 (comment
-  (def ^:private layer-step-inf [Double/POSITIVE_INFINITY {}])
+  (def ^:private layer-step-inf [+inf {}])
   (defmacro memo [f args body]
     `(let [m# (fn [f# ~@args] (let [~f (partial f# f#)] ~body))
           m# (memoize m#)]
@@ -107,7 +108,6 @@ comment)
 (defn assign-coordinates [layers edges]
   (let [node->weight (node-weight edges)
         edges        (remove :edge/back? edges)
-        nodes      (keys node->weight)
         max-weight (apply max (vals node->weight))
         ;; FIXME: we should consider scales when we get there
         
