@@ -104,7 +104,8 @@
              (some? (get-in *model* [:outgoing-edges node]))]
      [true false] (get-model-config :node-sink path)
      [false true] (get-model-config :node-source path)
-     [false false] (get-model-config :node-isolated path))
+     [false false] (get-model-config :node-isolated path)
+     [true true] nil)
 
    (get-model-config :node path)
 
