@@ -5,6 +5,8 @@
             [riall.style :refer [node->color]]
             [riall.common :refer [mean]]))
 
+(set! *warn-on-reflection* true)
+
 (defn path-d [& xs]
   (reify
     clojure.lang.Seqable
@@ -17,21 +19,23 @@
                         (double? x)  (format "%.1f" x)
                         :else (assert false)))))))
 
-(defn escape-html [text]
+(defn escape-html ^String [text]
   (.. (str text) (replace "&"  "&amp;") (replace "<"  "&lt;") (replace ">"  "&gt;") (replace "\"" "&quot;")))
 
-(defn hiccup [elem]
+(defn hiccup [^java.io.Writer writer elem]
   (cond (vector? elem)
         (let [[tag args & bodies] (if (map? (second elem))
                                     elem (list* (first elem) {} (next elem)))]
-          (print (str "<" (name tag)))
+          (.write writer (str "<" (name tag)))
           (when (seq args)
-            (doseq [[k v] args] (print (str " " (name k) \= \" (escape-html v) \"))))
+            (doseq [[k v] args] (.write writer (str " " (name k) \= \" (escape-html v) \"))))
           (if (seq bodies)
-            (do (print ">") (run! hiccup bodies) (print (str "</" (name tag) ">")))
-            (print "/>")))
-        (seq? elem) (run! hiccup elem)
-        :else       (print (escape-html elem))))
+            (do (.append writer \>)
+                (run! (partial hiccup writer) bodies)
+                (.write writer (str "</" (name tag) ">")))
+            (.write writer "/>")))
+        (seq? elem) (run! (partial hiccup writer) elem)
+        :else       (.write writer (escape-html elem))))
 
 (defn projecting [{:keys [margin scale-x scale-y]} [x y w h]]
   [(+ margin (* x scale-x))

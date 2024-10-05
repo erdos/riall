@@ -71,9 +71,9 @@
      [:g]]))
 
 
-(defn render-svg []
-  (println "<?xml version=\"1.0\"?>")
-  (hiccup (make-svg)))
+(defn render-svg [^java.io.Writer writer]
+  (.write writer "<?xml version=\"1.0\"?>")
+  (hiccup writer (make-svg)))
 
 
 (defn parsed->model [input]
@@ -93,9 +93,21 @@
      :nodes          (set (mapcat (juxt :edge/source :edge/target) edges))
      :id->edge       (reduce (fn [m e] (assoc m (:edge/id e) e)) {} edges)}))
 
-(defn lines->svg! [lines]
-  (binding [*model* (parsed->model (sequence riall.parse/xform lines))]
-    (render-svg)))
+(defn lines->svg!
+  "Given a seq of Strings, creates a diagram in SVG format printed to `writer`, which defaults to `*out*`. Returns `nil`."
+  ([lines]
+   (lines->svg! lines *out*))
+  ([lines ^java.io.Writer writer]
+   (binding [*model* (parsed->model (sequence riall.parse/xform lines))]
+     (render-svg writer)
+     nil)))
+
+(defn lines->svg
+  "Similar to lines->svg! but returns a String representation of the generated SVG instead of printing it."
+  [lines]
+  (let [writer (new java.io.StringWriter)]
+    (lines->svg! lines writer)
+    (str writer)))
 
 (defn -main [& args]
   (cond (some #{"--help"} args)
