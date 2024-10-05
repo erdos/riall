@@ -1,3 +1,5 @@
+.PHONY: test uber native build
+
 test:
 	clojure -A:test
 

@@ -35,24 +35,27 @@
               (* (edge-weight-fn p node)
                  (math/pow (- (+ y (/ (heights node) 2)) (+ (node->y p) (/ (heights p) 2))) 2)))))
 
+; Creates a reducer function that given a layer (list of nodes), updates a node->y mapping
+; so that the of total sum of (node-score) over each nodes is minimal.
 (defn build-layer-solver [edge-weight-fn node->parents heights max-y]
   (fn [node->y layer]
     (let [max-x      (count layer)
           max-height (transduce (map heights) max 1 layer)
           states     (object-array (* (inc max-x) max-height))
           costs      (double-array (* (inc max-x) max-height))
-          score-at   (fn [x y] (node-score edge-weight-fn node->parents heights node->y (nth layer x) y))]
+          cost-of    (fn [node new-y] (node-score edge-weight-fn node->parents heights node->y node new-y))]
       (dotimes [x max-x]
         (idx-> aset costs x max-y (double +inf)))
       (dotimes [y' max-y]
         (dotimes [x (min max-x (- max-y y'))] ;; 0 1 2 ... mx-1 <---- but order does not matter.
-          (let [y          (- max-y y' 1)
+          (let [xth-node   (nth layer x)
+                y          (- max-y y' 1)
                 jump-y     (+ y (int (heights (nth layer x))))
                 cost-place (if (< jump-y max-y)
-                             (+ (score-at x y) (idx-> aget costs (inc x) jump-y))
-                             +inf)
+                             (+ (cost-of xth-node y) (idx-> aget costs (inc x) jump-y))
+                             +inf) ;; cannot place outside of grid
                 cost-skip  (idx-> aget costs x (inc y))]
-            (if (< cost-place cost-skip)
+            (if (<= cost-place cost-skip) ;; FIXME: should it be < instead?
               (do (idx-> aset costs x y (double cost-place))
                   (idx-> aset states x y (cons y (idx-> aget states (inc x) jump-y))))
               (do (idx-> aset costs x y cost-skip)
@@ -113,7 +116,6 @@ comment)
         
         ;;; logical heights of each node
         heights (update-vals node->weight (fn [weight] (long (math/ceil (/ (* weight resolution) max-weight)))))
-        
         ;; pessimistic scenario, when all the wide nodes are on the same layer
         max-y (* resolution (reduce max (map count layers)))
 
